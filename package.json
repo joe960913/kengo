@@ -1,19 +1,70 @@
 {
   "name": "kengo",
-  "version": "0.0.1",
-  "description": "A Prisma-like, type-safe ORM for IndexedDB.",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "A Prisma-like ORM that precisely translates query objects into native IndexedDB transactions and operations for browsers",
+  "author": "Zander Zi <zanderzi0913@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "bun run build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@typescript-eslint/eslint-plugin": "^8.3.0",
+    "@typescript-eslint/parser": "^8.3.0",
+    "@vitest/ui": "^2.0.5",
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
   },
   "keywords": [
     "indexeddb",
-    "orm",
-    "prisma",
-    "typescript",
     "database",
-    "browser"
+    "browser",
+    "prisma",
+    "orm",
+    "typescript",
+    "kengo"
   ],
-  "author": "Zander Zi <zanderzi0913@gmail.com>",
-  "license": "MIT"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joe960913/kengo"
+  },
+  "bugs": {
+    "url": "https://github.com/joe960913/kengo/issues"
+  },
+  "homepage": "https://github.com/joe960913/kengo#readme",
+  "engines": {
+    "node": ">=18"
+  }
 }
