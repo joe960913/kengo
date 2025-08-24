@@ -2,16 +2,14 @@ import type {
   KengoClient, 
   KengoConfig, 
   Schema, 
-  TransactionOptions,
-  InferSchemaStores 
+  TransactionOptions
 } from '../types'
 import { ConnectionManager } from './connection'
 import { StoreOperationsImpl } from '../operations/store'
 
-export class Kengo<T extends Schema> implements KengoClient<T> {
+export class Kengo<T extends Schema> {
   private connectionManager: ConnectionManager
   private stores: Map<string, StoreOperationsImpl<any>> = new Map()
-  [key: string]: any
 
   constructor(config: KengoConfig<T>) {
     this.connectionManager = new ConnectionManager(
@@ -36,11 +34,7 @@ export class Kengo<T extends Schema> implements KengoClient<T> {
       
       this.stores.set(storeName, storeOps)
       
-      Object.defineProperty(this, storeName, {
-        get: () => storeOps,
-        enumerable: true,
-        configurable: false,
-      })
+      ;(this as any)[storeName] = storeOps
     }
   }
 
@@ -90,7 +84,7 @@ export class Kengo<T extends Schema> implements KengoClient<T> {
   private createTransactionalClient(transaction: IDBTransaction): KengoClient<T> {
     const client = Object.create(this)
     
-    for (const [storeName, storeOps] of this.stores) {
+    for (const [storeName] of this.stores) {
       const transactionalStore = new StoreOperationsImpl(
         storeName,
         async () => {
@@ -98,11 +92,7 @@ export class Kengo<T extends Schema> implements KengoClient<T> {
         }
       )
       
-      Object.defineProperty(client, storeName, {
-        get: () => transactionalStore,
-        enumerable: true,
-        configurable: false,
-      })
+      ;(client as any)[storeName] = transactionalStore
     }
 
     client.$transaction = async () => {
