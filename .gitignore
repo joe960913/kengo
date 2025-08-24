@@ -17,4 +17,6 @@ coverage
 *.sln
 *.sw?
 bun.lockb
+bun.lock
 TODO.md
+test

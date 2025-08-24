@@ -67,6 +67,7 @@ export class ConnectionManager {
   private performMigration(db: IDBDatabase, oldVersion: number, newVersion: number): void {
     const existingStores = Array.from(db.objectStoreNames)
     
+    // Delete stores that no longer exist in schema
     for (const storeName of existingStores) {
       if (!this.schema.stores[storeName]) {
         db.deleteObjectStore(storeName)
@@ -80,30 +81,38 @@ export class ConnectionManager {
       const autoIncrement = this.getAutoIncrement(storeConfig['@@id'])
 
       if (!db.objectStoreNames.contains(storeName)) {
+        // Create new store
         store = db.createObjectStore(storeName, {
           keyPath,
           autoIncrement,
         })
       } else {
+        // Get existing store from the upgrade transaction
         const transaction = (event.target as IDBOpenDBRequest).transaction
         if (!transaction) continue
         store = transaction.objectStore(storeName)
+        
+        // Clear existing indexes
+        const existingIndexes = Array.from(store.indexNames)
+        for (const indexName of existingIndexes) {
+          store.deleteIndex(indexName)
+        }
       }
 
-      const existingIndexes = Array.from(store.indexNames)
-      
-      for (const indexName of existingIndexes) {
-        store.deleteIndex(indexName)
-      }
-
+      // Create regular indexes
       const indexes = storeConfig['@@indexes'] || []
       for (const indexName of indexes) {
-        store.createIndex(indexName, indexName, { unique: false })
+        if (!store.indexNames.contains(indexName)) {
+          store.createIndex(indexName, indexName, { unique: false })
+        }
       }
 
+      // Create unique indexes
       const uniqueIndexes = storeConfig['@@uniqueIndexes'] || []
       for (const indexName of uniqueIndexes) {
-        store.createIndex(indexName, indexName, { unique: true })
+        if (!store.indexNames.contains(indexName)) {
+          store.createIndex(indexName, indexName, { unique: true })
+        }
       }
     }
   }

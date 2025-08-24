@@ -1,4 +1,4 @@
-# Kengo (剣豪) - A Comprehensive Guide to its Features
+# Kengo
 
 Every feature in Kengo is meticulously designed to offer a master-class development experience for browser databases. The following is a comprehensive guide to all of Kengo's features and capabilities.
 
