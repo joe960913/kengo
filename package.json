@@ -23,6 +23,9 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
+    "build:analyze": "bun run build && bun run analyze",
+    "analyze": "echo 'Bundle sizes:' && ls -lh dist/*.js dist/*.cjs | grep -v '.map'",
+    "size": "bun run build && size-limit",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -35,6 +38,8 @@
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {
+    "@size-limit/file": "^11.2.0",
+    "@size-limit/preset-small-lib": "^11.2.0",
     "@types/bun": "latest",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
@@ -43,6 +48,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.3.3",
+    "terser": "^5.43.1",
     "tsup": "^8.2.4",
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"

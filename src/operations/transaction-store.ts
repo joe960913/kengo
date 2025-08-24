@@ -15,20 +15,22 @@ import type {
 import { QueryBuilder } from '../core/query-builder'
 import { BaseStoreOperations } from './base-store'
 
-export class StoreOperationsImpl<T> extends BaseStoreOperations implements StoreOperations<T> {
+export class TransactionalStoreOperations<T> extends BaseStoreOperations implements StoreOperations<T> {
   constructor(
     private readonly storeName: string,
-    private readonly getDB: () => Promise<IDBDatabase>
+    private readonly transaction: IDBTransaction
   ) {
     super()
+  }
+
+  private getStore(mode: IDBTransactionMode = 'readonly'): IDBObjectStore {
+    return this.transaction.objectStore(this.storeName)
   }
 
   async create<S extends SelectInput<T> = never>(
     options: CreateOptions<T> & { select?: S }
   ): Promise<any> {
-    const db = await this.getDB()
-    const transaction = db.transaction([this.storeName], 'readwrite')
-    const store = transaction.objectStore(this.storeName)
+    const store = this.getStore('readwrite')
 
     return new Promise((resolve, reject) => {
       const request = store.add(options.data)
@@ -54,9 +56,7 @@ export class StoreOperationsImpl<T> extends BaseStoreOperations implements Store
   }
 
   async createMany(options: CreateManyOptions<T>): Promise<{ count: number }> {
-    const db = await this.getDB()
-    const transaction = db.transaction([this.storeName], 'readwrite')
-    const store = transaction.objectStore(this.storeName)
+    const store = this.getStore('readwrite')
 
     let count = 0
     const promises: Promise<void>[] = []
@@ -87,9 +87,7 @@ export class StoreOperationsImpl<T> extends BaseStoreOperations implements Store
   async findUnique<S extends SelectInput<T> = never>(
     options: FindUniqueOptions<T> & { select?: S }
   ): Promise<any> {
-    const db = await this.getDB()
-    const transaction = db.transaction([this.storeName], 'readonly')
-    const store = transaction.objectStore(this.storeName)
+    const store = this.getStore()
 
     const keys = Object.keys(options.where)
     if (keys.length !== 1) {
@@ -138,9 +136,7 @@ export class StoreOperationsImpl<T> extends BaseStoreOperations implements Store
   async findMany<S extends SelectInput<T> = never>(
     options?: FindManyOptions<T> & { select?: S }
   ): Promise<any[]> {
-    const db = await this.getDB()
-    const transaction = db.transaction([this.storeName], 'readonly')
-    const store = transaction.objectStore(this.storeName)
+    const store = this.getStore()
 
     return new Promise((resolve, reject) => {
       const request = store.getAll()
@@ -186,10 +182,7 @@ export class StoreOperationsImpl<T> extends BaseStoreOperations implements Store
     }
 
     const updated = this.applyUpdate(existing, options.data)
-
-    const db = await this.getDB()
-    const transaction = db.transaction([this.storeName], 'readwrite')
-    const store = transaction.objectStore(this.storeName)
+    const store = this.getStore('readwrite')
 
     return new Promise((resolve, reject) => {
       const request = store.put(updated)
@@ -208,10 +201,7 @@ export class StoreOperationsImpl<T> extends BaseStoreOperations implements Store
 
   async updateMany(options: UpdateManyOptions<T>): Promise<{ count: number }> {
     const records = await this.findMany({ where: options.where })
-    
-    const db = await this.getDB()
-    const transaction = db.transaction([this.storeName], 'readwrite')
-    const store = transaction.objectStore(this.storeName)
+    const store = this.getStore('readwrite')
 
     let count = 0
     const promises: Promise<void>[] = []
@@ -243,9 +233,7 @@ export class StoreOperationsImpl<T> extends BaseStoreOperations implements Store
       throw new Error('Record not found')
     }
 
-    const db = await this.getDB()
-    const transaction = db.transaction([this.storeName], 'readwrite')
-    const store = transaction.objectStore(this.storeName)
+    const store = this.getStore('readwrite')
 
     const keys = Object.keys(options.where)
     const [key] = keys
@@ -268,10 +256,7 @@ export class StoreOperationsImpl<T> extends BaseStoreOperations implements Store
 
   async deleteMany(options?: DeleteManyOptions<T>): Promise<{ count: number }> {
     const records = await this.findMany({ where: options?.where })
-    
-    const db = await this.getDB()
-    const transaction = db.transaction([this.storeName], 'readwrite')
-    const store = transaction.objectStore(this.storeName)
+    const store = this.getStore('readwrite')
 
     let count = 0
     const promises: Promise<void>[] = []

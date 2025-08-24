@@ -6,6 +6,7 @@ import type {
 } from '../types'
 import { ConnectionManager } from './connection'
 import { StoreOperationsImpl } from '../operations/store'
+import { TransactionalStoreOperations } from '../operations/transaction-store'
 
 export class Kengo<T extends Schema> {
   private connectionManager: ConnectionManager
@@ -82,21 +83,27 @@ export class Kengo<T extends Schema> {
   }
 
   private createTransactionalClient(transaction: IDBTransaction): KengoClient<T> {
-    const client = Object.create(this)
+    const client = {} as any
     
     for (const [storeName] of this.stores) {
-      const transactionalStore = new StoreOperationsImpl(
+      const transactionalStore = new TransactionalStoreOperations(
         storeName,
-        async () => {
-          return transaction.db
-        }
+        transaction
       )
       
-      ;(client as any)[storeName] = transactionalStore
+      client[storeName] = transactionalStore
     }
 
     client.$transaction = async () => {
       throw new Error('Nested transactions are not supported')
+    }
+    
+    client.$getRawDB = async () => {
+      return transaction.db
+    }
+    
+    client.$disconnect = async () => {
+      throw new Error('Cannot disconnect within a transaction')
     }
 
     return client

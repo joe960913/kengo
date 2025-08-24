@@ -1,0 +1,17 @@
+[
+  {
+    "name": "ESM (minified)",
+    "path": "dist/index.min.js",
+    "limit": "10 KB"
+  },
+  {
+    "name": "CJS (minified)",
+    "path": "dist/index.min.cjs",
+    "limit": "10 KB"
+  },
+  {
+    "name": "ESM (development)",
+    "path": "dist/index.js",
+    "limit": "30 KB"
+  }
+]
