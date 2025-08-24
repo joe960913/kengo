@@ -1,66 +1,67 @@
-## Kengo (剣豪) - 功能特性全解
+# Kengo (剣豪) - A Comprehensive Guide to its Features
 
-Kengo 的每一项功能都经过精心设计，旨在提供一个无与伦比的、大师级的浏览器数据库开发体验。以下是 Kengo 所持有的全部“招式”与“奥義”。
+Every feature in Kengo is meticulously designed to offer a master-class development experience for browser databases. The following is a comprehensive guide to all of Kengo's features and capabilities.
 
-### 目录
+### Table of Contents
 
-1.  [**核心哲学 (The Creed)**](#1-核心哲学-the-creed)
-2.  [**Schema 定义 (`defineSchema`)**](#2-schema-定义-defineschema)
-3.  [**Kengo 客户端 (`new Kengo()`)**](#3-kengo-客户端-new-kengo)
-4.  [**核心招式: CRUD 操作**](#4-核心招式-crud-操作)
-    *   [`create`](#create)
-    *   [`createMany`](#createmany)
-    *   [`findUnique`](#findunique)
-    *   [`findFirst`](#findfirst)
-    *   [`findMany`](#findmany)
-    *   [`update`](#update)
-    *   [`updateMany`](#updatemany)
-    *   [`delete`](#delete)
-    *   [`deleteMany`](#deletemany)
-    *   [`upsert`](#upsert)
-5.  [**查询调节器 (Query Modifiers)**](#5-查询调节器-query-modifiers)
-    *   [Filtering (`where`)](#filtering-where)
-    *   [Ordering (`orderBy`)](#ordering-orderby)
-    *   [Pagination (`take` & `skip`)](#pagination-take--skip)
-    *   [Field Selection (`select`)](#field-selection-select)
-6.  [**奥義: 高级功能**](#6-奥義-高级功能)
-    *   [事务 (`$transaction`)](#事务-transaction)
-    *   [自动迁移 (Automatic Migrations)](#自动迁移-automatic-migrations)
-    *   [原生访问 (`$getRawDB`)](#原生访问-getrawdb)
+1. [**Core Philosophy (The Creed)**](#1-core-philosophy-the-creed)
+2. [**Schema Definition (`defineSchema`)**](#2-schema-definition-defineschema)
+3. [**The Kengo Client (`new Kengo()`)**](#3-the-kengo-client-new-kengo)
+4. [**Core API: CRUD Operations**](#4-core-api-crud-operations)
+   * [`create`](#create)
+   * [`createMany`](#createmany)
+   * [`findUnique`](#findunique)
+   * [`findFirst`](#findfirst)
+   * [`findMany`](#findmany)
+   * [`update`](#update)
+   * [`updateMany`](#updatemany)
+   * [`delete`](#delete)
+   * [`deleteMany`](#deletemany)
+   * [`upsert`](#upsert)
+5. [**Query Modifiers**](#5-query-modifiers)
+   * [Filtering (`where`)](#filtering-where)
+   * [Ordering (`orderBy`)](#ordering-orderby)
+   * [Pagination (`take` &amp; `skip`)](#pagination-take--skip)
+   * [Field Selection (`select`)](#field-selection-select)
+6. [**Advanced Features**](#6-advanced-features)
+   * [Transactions (`$transaction`)](#transactions-transaction)
+   * [Automatic Migrations](#automatic-migrations)
+   * [Raw Database Access (`$getRawDB`)](#raw-database-access-getrawdb)
 
 ---
 
-### 1. 核心哲学 (The Creed)
+### 1. Core Philosophy (The Creed)
 
-*   **Schema First (型):** 你的 Schema 定义是数据结构的唯一、绝对的真实来源。Kengo 依赖它来生成类型、创建表和索引，并执行迁移。
-*   **完全类型安全 (刃):** 从 `db.users.create` 的 `data` 参数，到 `findMany` 的返回结果，每一环都由 TypeScript 严格把关。告别 `any`，拥抱编译时自信。
-*   **零配置迁移 (鞘):** 你只需提升 Schema 中的 `version` 号并调整结构，Kengo 会在下次初始化时自动处理 IndexedDB 的版本升级和结构变更。
+* **Schema First (The Form):** Your schema definition is the single, absolute source of truth for your data structure. Kengo relies on it to generate types, create object stores and indexes, and perform migrations.
+* **Fully Type-Safe (The Blade):** From the `data` argument in `db.users.create` to the return value of `findMany`, every step is strictly enforced by TypeScript. Say goodbye to `any` and embrace compile-time confidence.
+* **Zero-Config Migrations (The Scabbard):** Simply increment the `version` number in your schema and adjust its structure. Kengo automatically handles the IndexedDB version upgrade and structural changes upon the next initialization.
 
-### 2. Schema 定义 (`defineSchema`)
+### 2. Schema Definition (`defineSchema`)
 
-用于定义数据库所有元信息的核心函数。
+The core function used to define all database metadata.
 
-*   **`version`**: `number` (必需)
-    *   数据库的当前版本号。必须是正整数。每次你更改 `stores` 的结构时，都**必须**增加此版本号以触发自动迁移。
-*   **`stores`**: `Record<string, StoreDefinition>` (必需)
-    *   一个对象，其 `key` 为表名 (例如 `users`)，`value` 为该表的定义。
-*   **`StoreDefinition`**:
-    *   `'@@id'`: `string | { keyPath: string, autoIncrement: boolean }` (必需)
-        *   定义主键。
-        *   简单模式: `'@@id': 'id'`，表示 `id` 字段是主键。
-        *   高级模式: `'@@id': { keyPath: 'id', autoIncrement: true }`，允许指定主键是否自增。
-    *   `'@@indexes'`: `string[]` (可选)
-        *   需要创建索引的字段名数组，例如 `['email', 'age']`。
-    *   `'@@uniqueIndexes'`: `string[]` (可选)
-        *   需要创建**唯一约束**索引的字段名数组，例如 `['email']`。
+* **`version`**: `number` (required)
+  * The current version of the database. Must be a positive integer. You **must** increment this version number whenever you change the structure of your `stores` to trigger an automatic migration.
+* **`stores`**: `Record<string, StoreDefinition>` (required)
+  * An object where each `key` is the store name (e.g., `users`), and the `value` is the store's definition.
+* **`StoreDefinition`**:
+  * `'@@id'`: `string | { keyPath: string, autoIncrement: boolean }` (required)
+    * Defines the primary key.
+    * Simple syntax: `'@@id': 'id'` indicates that the `id` field is the primary key.
+    * Expanded syntax: `'@@id': { keyPath: 'id', autoIncrement: true }` allows specifying if the primary key auto-increments.
+  * `'@@indexes'`: `string[]` (optional)
+    * An array of field names for which to create indexes, e.g., `['email', 'age']`.
+  * `'@@uniqueIndexes'`: `string[]` (optional)
+    * An array of field names for which to create **unique** indexes, e.g., `['email']`.
 
-**示例:**
+**Example:**
+
 ```typescript
 const mySchema = defineSchema({
   version: 2,
   stores: {
     users: {
-      '@@id': { keyPath: 'id', autoIncrement: true }, // 自增主键
+      '@@id': { keyPath: 'id', autoIncrement: true }, // Auto-incrementing primary key
       '@@indexes': ['age', 'country'],
       '@@uniqueIndexes': ['email'],
     },
@@ -69,54 +70,69 @@ const mySchema = defineSchema({
 });
 ```
 
-### 3. Kengo 客户端 (`new Kengo()`)
+### 3. The Kengo Client (`new Kengo()`)
 
-创建和管理数据库连接的入口。
+The entry point for creating and managing the database connection.
 
-*   **`new Kengo(options)`**
-    *   `options.name`: `string` - 数据库的名称。
-    *   `options.schema`: `SchemaObject` - 由 `defineSchema` 返回的 Schema 对象。
+* **`new Kengo(options)`**
+  * `options.name`: `string` - The name of the database.
+  * `options.schema`: `SchemaObject` - The schema object returned by `defineSchema`.
 
-客户端实例会根据你的 Schema 动态生成属性，例如 `db.users` 和 `db.posts`。
+The client instance dynamically generates properties based on your schema, such as `db.users` and `db.posts`.
 
 ---
 
-### 4. 核心招式: CRUD 操作
+### 4. Core API: CRUD Operations
 
-Kengo 为每个数据表提供了一套完整、强大且符合 Prisma 命名规范的 CRUD API。
+Kengo provides a complete, powerful, and Prisma-like CRUD API for each data store.
 
 #### `create`
-创建一条新纪录。
+
+Creates a new record.
+
 ```typescript
 const user = await db.users.create({ data: { email: '...' } });
 ```
-*   `data`: `T` - 需要创建的数据对象，其类型会根据你的 `User` 接口进行检查。
+
+* `data`: `T` - The data object to be created, type-checked against your `User` interface.
 
 #### `createMany`
-批量创建多条记录。
+
+Creates multiple records in a batch.
+
 ```typescript
 await db.users.createMany({ data: [{...}, {...}] });
 ```
-*   `data`: `T[]` - 数据对象数组。
-*   **注意:** 这会在一个单独的事务中执行，以保证性能。
+
+* `data`: `T[]` - An array of data objects.
+* **Note:** This is executed in a single transaction for better performance.
 
 #### `findUnique`
-根据主键或唯一索引查找单条记录。
+
+Finds a single record by its primary key or a unique index.
+
 ```typescript
 const user = await db.users.findUnique({ where: { email: 'a@b.c' } });
 // returns User | null
 ```
-*   `where`: `UniqueWhereInput` - 查询条件，必须包含一个主键或唯一索引字段。
+
+* `where`: `UniqueWhereInput` - The query condition, which must include a primary key or a unique index field.
 
 #### `findFirst`
-查找符合条件的第一条记录。```typescript
+
+Finds the first record that matches the given criteria.
+
+```typescript
 const user = await db.users.findFirst({ where: { age: { gt: 18 } } });
 // returns User | null
 ```
-*   接受 `where`, `orderBy` 等与 `findMany` 相同的调节器。
+
+* Accepts the same modifiers as `findMany`, such as `where` and `orderBy`.
 
 #### `findMany`
-查找所有符合条件的记录。这是最灵活的查询方法。
+
+Finds all records that match the given criteria. This is the most flexible query method.
+
 ```typescript
 const users = await db.users.findMany({
   where: { age: { gte: 21 } },
@@ -125,23 +141,29 @@ const users = await db.users.findMany({
 });
 // returns User[]
 ```
-*   详细选项见 [查询调节器](#5-查询调节器-query-modifiers)。
+
+* See [Query Modifiers](#5-query-modifiers) for detailed options.
 
 #### `update`
-根据唯一条件更新单条记录。
+
+Updates a single record based on a unique criterion.
+
 ```typescript
 const updatedUser = await db.users.update({
   where: { id: 1 },
   data: { age: 30, name: 'Kenji' },
 });
 ```
-*   `where`: `UniqueWhereInput` - 定位要更新的记录。
-*   `data`: `Partial<T>` & `AtomicOperations` - 包含要更新的字段。支持**原子操作**：
-    *   `age: { increment: 1 }`
-    *   `followers: { decrement: 5 }`
+
+* `where`: `UniqueWhereInput` - Locates the record to update.
+* `data`: `Partial<T>` & `AtomicOperations` - The fields to update. Supports **atomic operations**:
+  * `age: { increment: 1 }`
+  * `followers: { decrement: 5 }`
 
 #### `updateMany`
-批量更新所有符合条件的记录。
+
+Updates multiple records that match the criteria in a batch.
+
 ```typescript
 await db.users.updateMany({
   where: { country: 'JP' },
@@ -150,19 +172,25 @@ await db.users.updateMany({
 ```
 
 #### `delete`
-根据唯一条件删除单条记录。
+
+Deletes a single record based on a unique criterion.
+
 ```typescript
 const deletedUser = await db.users.delete({ where: { id: 1 } });
 ```
 
 #### `deleteMany`
-批量删除所有符合条件的记录。
+
+Deletes multiple records that match the criteria in a batch.
+
 ```typescript
 await db.users.deleteMany({ where: { status: 'INACTIVE' } });
 ```
 
 #### `upsert`
-若记录存在则更新，若不存在则创建。
+
+Updates a record if it exists, or creates it if it does not.
+
 ```typescript
 await db.users.upsert({
   where: { email: 'a@b.c' },
@@ -170,41 +198,47 @@ await db.users.upsert({
   create: { email: 'a@b.c', name: 'New User' },
 });
 ```
-*   `where`: `UniqueWhereInput` - 用于查找记录的条件。
-*   `update`: `Partial<T>` - 如果找到记录，则应用此更新。
-*   `create`: `T` - 如果未找到记录，则用此数据创建新记录。
+
+* `where`: `UniqueWhereInput` - The criteria used to find the record.
+* `update`: `Partial<T>` - The update to apply if the record is found.
+* `create`: `T` - The data to use to create the record if it is not found.
 
 ---
 
-### 5. 查询调节器 (Query Modifiers)
+### 5. Query Modifiers
 
-用于在 `findMany`, `findFirst` 等查询中精炼结果。
+Used to refine results in queries like `findMany` and `findFirst`.
 
 #### Filtering (`where`)
-*   **直接匹配**: `{ name: 'Kenji', age: 29 }`
-*   **高级条件**:
-    *   `equals`: `{ name: { equals: 'Kenji' } }` (默认)
-    *   `not`: `{ name: { not: 'Kenji' } }`
-    *   `in`: `{ country: { in: ['JP', 'US'] } }`
-    *   `notIn`: `{ country: { notIn: ['CN', 'RU'] } }`
-*   **数值比较**:
-    *   `gt`: `{ age: { gt: 18 } }` (大于)
-    *   `gte`: `{ age: { gte: 18 } }` (大于等于)
-    *   `lt`: `{ age: { lt: 65 } }` (小于)
-    *   `lte`: `{ age: { lte: 65 } }` (小于等于)
-*   **字符串匹配** (未来规划):
-    *   `contains`, `startsWith`, `endsWith`
+
+* **Direct Match**: `{ name: 'Kenji', age: 29 }`
+* **Advanced Conditions**:
+  * `equals`: `{ name: { equals: 'Kenji' } }` (default)
+  * `not`: `{ name: { not: 'Kenji' } }`
+  * `in`: `{ country: { in: ['JP', 'US'] } }`
+  * `notIn`: `{ country: { notIn: ['CN', 'RU'] } }`
+* **Numeric Comparisons**:
+  * `gt`: `{ age: { gt: 18 } }` (greater than)
+  * `gte`: `{ age: { gte: 18 } }` (greater than or equal to)
+  * `lt`: `{ age: { lt: 65 } }` (less than)
+  * `lte`: `{ age: { lte: 65 } }` (less than or equal to)
+* **String Matching** (Planned for future):
+  * `contains`, `startsWith`, `endsWith`
 
 #### Ordering (`orderBy`)
-*   **单字段排序**: `{ age: 'desc' }`
-*   **多字段排序**: `[{ age: 'desc' }, { name: 'asc' }]`
+
+* **Single-field sorting**: `{ age: 'desc' }`
+* **Multi-field sorting**: `[{ age: 'desc' }, { name: 'asc' }]`
 
 #### Pagination (`take` & `skip`)
-*   `take`: `number` - 获取记录的数量 (LIMIT)。
-*   `skip`: `number` - 跳过记录的数量 (OFFSET)。
+
+* `take`: `number` - The number of records to retrieve (LIMIT).
+* `skip`: `number` - The number of records to skip (OFFSET).
 
 #### Field Selection (`select`)
-只返回你需要的字段，以提升性能。
+
+Return only the fields you need to improve performance.
+
 ```typescript
 const partialUser = await db.users.findUnique({
   where: { id: 1 },
@@ -218,19 +252,21 @@ const partialUser = await db.users.findUnique({
 
 ---
 
-### 6. 奥義: 高级功能
+### 6. Advanced Features
 
-超越基础 CRUD 的强大技巧。
+Powerful techniques that go beyond basic CRUD operations.
 
-#### 事务 (`$transaction`)
-将多个操作捆绑在一个原子事务中。要么全部成功，要么全部失败。
+#### Transactions (`$transaction`)
+
+Bundle multiple operations into a single atomic transaction. Either all operations succeed, or they all fail.
+
 ```typescript
 await db.$transaction(async (tx) => {
-  // `tx` 是一个事务化的 Kengo 客户端
+  // `tx` is a transactional Kengo client
   const user = await tx.users.findUnique({ where: { id: 1 } });
 
   if (user.balance < 100) {
-    throw new Error('Insufficient balance!'); // 抛出错误会自动回滚事务
+    throw new Error('Insufficient balance!'); // Throwing an error automatically rolls back the transaction
   }
 
   await tx.users.update({
@@ -244,19 +280,23 @@ await db.$transaction(async (tx) => {
 });
 ```
 
-#### 自动迁移 (Automatic Migrations)
-Kengo 会在初始化时自动处理数据库结构的变更。
-*   **工作流**:
-    1.  在 `schema.ts` 中修改 `stores` 的定义 (例如，添加一个新索引)。
-    2.  **将 `version` 号加一**。
-    3.  下次你的 Web 应用加载并初始化 Kengo 时，它会检测到版本差异，并在 `onupgradeneeded` 事件中自动执行 `createIndex` 或 `createObjectStore` 等操作。
-*   **注意**: 复杂的数据迁移（例如字段重命名）在未来版本中将提供更精细的控制。
+#### Automatic Migrations
 
-#### 原生访问 (`$getRawDB`)
-在需要时，获取底层的 `IDBDatabase` 对象以进行原生操作。这是一个“逃生舱口”。
+Kengo automatically handles changes to the database structure during initialization.
+
+* **Workflow**:
+  1. Modify the `stores` definition in `schema.ts` (e.g., add a new index).
+  2. **Increment the `version` number by one.**
+  3. The next time your web application loads and initializes Kengo, it will detect the version difference and automatically execute operations like `createIndex` or `createObjectStore` within the `onupgradeneeded` event.
+* **Note**: More granular control over complex data migrations (e.g., field renaming) will be provided in a future version.
+
+#### Raw Database Access (`$getRawDB`)
+
+When necessary, access the underlying `IDBDatabase` object for native operations. This serves as an "escape hatch."
+
 ```typescript
 const rawDB = await db.$getRawDB();
-// 你现在可以使用标准的 IndexedDB API
+// You can now use the standard IndexedDB API
 const transaction = rawDB.transaction('users', 'readonly');
 // ...
 ```
