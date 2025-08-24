@@ -1,0 +1,19 @@
+{
+  "name": "kengo",
+  "version": "0.0.1",
+  "description": "A Prisma-like, type-safe ORM for IndexedDB.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "indexeddb",
+    "orm",
+    "prisma",
+    "typescript",
+    "database",
+    "browser"
+  ],
+  "author": "Zander Zi <zanderzi0913@gmail.com>",
+  "license": "MIT"
+}
