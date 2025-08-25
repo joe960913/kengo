@@ -15,7 +15,7 @@ export class ConnectionManager {
       onUpgrade?: (db: IDBDatabase, oldVersion: number, newVersion: number) => void
       onBlocked?: () => void
       onVersionChange?: () => void
-    }
+    },
   ) {
     this.dbName = dbName
     this.schema = schema
@@ -38,7 +38,7 @@ export class ConnectionManager {
 
       request.onsuccess = () => {
         this.db = request.result
-        
+
         this.db.onversionchange = () => {
           this.versionChangeCallback?.()
           this.db?.close()
@@ -53,8 +53,8 @@ export class ConnectionManager {
         const oldVersion = event.oldVersion
         const newVersion = event.newVersion || this.schema.version
 
-        this.performMigration(db, oldVersion, newVersion)
-        
+        this.performMigration(db, oldVersion, newVersion, event)
+
         this.upgradeCallback?.(db, oldVersion, newVersion)
       }
 
@@ -64,9 +64,14 @@ export class ConnectionManager {
     })
   }
 
-  private performMigration(db: IDBDatabase, oldVersion: number, newVersion: number): void {
+  private performMigration(
+    db: IDBDatabase,
+    _oldVersion: number,
+    _newVersion: number,
+    event?: Event,
+  ): void {
     const existingStores = Array.from(db.objectStoreNames)
-    
+
     // Delete stores that no longer exist in schema
     for (const storeName of existingStores) {
       if (!this.schema.stores[storeName]) {
@@ -76,7 +81,7 @@ export class ConnectionManager {
 
     for (const [storeName, storeConfig] of Object.entries(this.schema.stores)) {
       let store: IDBObjectStore
-      
+
       const keyPath = this.getKeyPath(storeConfig['@@id'])
       const autoIncrement = this.getAutoIncrement(storeConfig['@@id'])
 
@@ -88,10 +93,10 @@ export class ConnectionManager {
         })
       } else {
         // Get existing store from the upgrade transaction
-        const transaction = (event.target as IDBOpenDBRequest).transaction
+        const transaction = event ? (event.target as IDBOpenDBRequest)?.transaction : undefined
         if (!transaction) continue
         store = transaction.objectStore(storeName)
-        
+
         // Clear existing indexes
         const existingIndexes = Array.from(store.indexNames)
         for (const indexName of existingIndexes) {
@@ -122,7 +127,7 @@ export class ConnectionManager {
   }
 
   private getAutoIncrement(idConfig: string | KeyPathConfig): boolean {
-    return typeof idConfig === 'object' ? idConfig.autoIncrement ?? false : false
+    return typeof idConfig === 'object' ? (idConfig.autoIncrement ?? false) : false
   }
 
   async getDatabase(): Promise<IDBDatabase> {

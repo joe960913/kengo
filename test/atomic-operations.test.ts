@@ -33,7 +33,7 @@ describe('Atomic Operations', () => {
 
   it('should increment value', async () => {
     const counter = await db.counters.findFirst({ where: { name: 'TestCounter' } })
-    
+
     const updated = await db.counters.update({
       where: { id: counter.id },
       data: { value: { increment: 10 } },
@@ -44,7 +44,7 @@ describe('Atomic Operations', () => {
 
   it('should decrement value', async () => {
     const counter = await db.counters.findFirst({ where: { name: 'TestCounter' } })
-    
+
     const updated = await db.counters.update({
       where: { id: counter.id },
       data: { value: { decrement: 25 } },
@@ -55,7 +55,7 @@ describe('Atomic Operations', () => {
 
   it('should multiply value', async () => {
     const counter = await db.counters.findFirst({ where: { name: 'TestCounter' } })
-    
+
     const updated = await db.counters.update({
       where: { id: counter.id },
       data: { value: { multiply: 3 } },
@@ -66,7 +66,7 @@ describe('Atomic Operations', () => {
 
   it('should divide value', async () => {
     const counter = await db.counters.findFirst({ where: { name: 'TestCounter' } })
-    
+
     const updated = await db.counters.update({
       where: { id: counter.id },
       data: { value: { divide: 4 } },
@@ -77,7 +77,7 @@ describe('Atomic Operations', () => {
 
   it('should not divide by zero', async () => {
     const counter = await db.counters.findFirst({ where: { name: 'TestCounter' } })
-    
+
     const updated = await db.counters.update({
       where: { id: counter.id },
       data: { value: { divide: 0 } },
@@ -114,7 +114,7 @@ describe('Atomic Operations', () => {
 
   it('should combine atomic operations with regular updates', async () => {
     const counter = await db.counters.findFirst({ where: { name: 'TestCounter' } })
-    
+
     const updated = await db.counters.update({
       where: { id: counter.id },
       data: {
@@ -132,7 +132,7 @@ describe('Atomic Operations', () => {
   it('should work in transactions', async () => {
     await db.$transaction(async (tx: any) => {
       const counter = await tx.counters.findFirst({ where: { name: 'TestCounter' } })
-      
+
       await tx.counters.update({
         where: { id: counter.id },
         data: { value: { increment: 10 } },

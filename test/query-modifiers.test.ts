@@ -50,7 +50,7 @@ describe('Query Modifiers', () => {
         where: { category: 'Furniture' },
       })
       expect(products).toHaveLength(3)
-      expect(products.every(p => p.category === 'Furniture')).toBe(true)
+      expect(products.every((p) => p.category === 'Furniture')).toBe(true)
     })
 
     it('should filter with equals (explicit)', async () => {
@@ -65,7 +65,7 @@ describe('Query Modifiers', () => {
         where: { category: { not: 'Furniture' } },
       })
       expect(products).toHaveLength(5)
-      expect(products.every(p => p.category !== 'Furniture')).toBe(true)
+      expect(products.every((p) => p.category !== 'Furniture')).toBe(true)
     })
 
     it('should filter with in', async () => {
@@ -86,28 +86,28 @@ describe('Query Modifiers', () => {
       const products = await db.products.findMany({
         where: { price: { gt: 100 } },
       })
-      expect(products.every(p => p.price > 100)).toBe(true)
+      expect(products.every((p) => p.price > 100)).toBe(true)
     })
 
     it('should filter with gte (greater than or equal)', async () => {
       const products = await db.products.findMany({
         where: { price: { gte: 100 } },
       })
-      expect(products.every(p => p.price >= 100)).toBe(true)
+      expect(products.every((p) => p.price >= 100)).toBe(true)
     })
 
     it('should filter with lt (less than)', async () => {
       const products = await db.products.findMany({
         where: { price: { lt: 100 } },
       })
-      expect(products.every(p => p.price < 100)).toBe(true)
+      expect(products.every((p) => p.price < 100)).toBe(true)
     })
 
     it('should filter with lte (less than or equal)', async () => {
       const products = await db.products.findMany({
         where: { price: { lte: 100 } },
       })
-      expect(products.every(p => p.price <= 100)).toBe(true)
+      expect(products.every((p) => p.price <= 100)).toBe(true)
     })
 
     it('should combine multiple where conditions', async () => {
@@ -119,11 +119,9 @@ describe('Query Modifiers', () => {
         },
       })
       expect(products).toHaveLength(3) // Laptop, Monitor, Headphones
-      expect(products.every(p => 
-        p.category === 'Electronics' && 
-        p.inStock === true && 
-        p.price >= 100
-      )).toBe(true)
+      expect(
+        products.every((p) => p.category === 'Electronics' && p.inStock === true && p.price >= 100),
+      ).toBe(true)
     })
   })
 
@@ -132,7 +130,7 @@ describe('Query Modifiers', () => {
       const products = await db.products.findMany({
         orderBy: { price: 'asc' },
       })
-      
+
       for (let i = 1; i < products.length; i++) {
         expect(products[i].price).toBeGreaterThanOrEqual(products[i - 1].price)
       }
@@ -142,7 +140,7 @@ describe('Query Modifiers', () => {
       const products = await db.products.findMany({
         orderBy: { price: 'desc' },
       })
-      
+
       for (let i = 1; i < products.length; i++) {
         expect(products[i].price).toBeLessThanOrEqual(products[i - 1].price)
       }
@@ -150,19 +148,16 @@ describe('Query Modifiers', () => {
 
     it('should order by multiple fields', async () => {
       const products = await db.products.findMany({
-        orderBy: [
-          { category: 'asc' },
-          { price: 'desc' },
-        ],
+        orderBy: [{ category: 'asc' }, { price: 'desc' }],
       })
 
       // Check that Electronics come before Furniture
-      const electronicsIndex = products.findIndex(p => p.category === 'Electronics')
-      const furnitureIndex = products.findIndex(p => p.category === 'Furniture')
+      const electronicsIndex = products.findIndex((p) => p.category === 'Electronics')
+      const furnitureIndex = products.findIndex((p) => p.category === 'Furniture')
       expect(electronicsIndex).toBeLessThan(furnitureIndex)
 
       // Check that within each category, prices are descending
-      const electronics = products.filter(p => p.category === 'Electronics')
+      const electronics = products.filter((p) => p.category === 'Electronics')
       for (let i = 1; i < electronics.length; i++) {
         expect(electronics[i].price).toBeLessThanOrEqual(electronics[i - 1].price)
       }
@@ -181,12 +176,12 @@ describe('Query Modifiers', () => {
       const allProducts = await db.products.findMany({
         orderBy: { price: 'asc' },
       })
-      
+
       const skippedProducts = await db.products.findMany({
         orderBy: { price: 'asc' },
         skip: 2,
       })
-      
+
       expect(skippedProducts).toHaveLength(allProducts.length - 2)
       expect(skippedProducts[0]).toEqual(allProducts[2])
     })
@@ -219,7 +214,7 @@ describe('Query Modifiers', () => {
         },
       })
 
-      products.forEach(product => {
+      products.forEach((product) => {
         expect(product).toHaveProperty('name')
         expect(product).toHaveProperty('price')
         expect(product).not.toHaveProperty('category')

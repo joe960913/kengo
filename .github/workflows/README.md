@@ -5,6 +5,7 @@ This project uses GitHub Actions for continuous integration and deployment.
 ## Workflows
 
 ### 🧪 Tests (`test.yml`)
+
 - **Triggers**: Push to main, Pull requests
 - **Matrix**: Tests against Node.js 18.x, 20.x, and 22.x
 - **Actions**:
@@ -17,7 +18,8 @@ This project uses GitHub Actions for continuous integration and deployment.
   - Code coverage reporting to Codecov
 
 ### 📦 Release (`release.yml`)
-- **Triggers**: 
+
+- **Triggers**:
   - Push tags matching `v*`
   - Manual workflow dispatch
 - **Actions**:
@@ -28,6 +30,7 @@ This project uses GitHub Actions for continuous integration and deployment.
   - `NPM_TOKEN` secret must be configured
 
 ### 🔍 Pull Request (`pr.yml`)
+
 - **Triggers**: Pull request events
 - **Actions**:
   - Bundle size analysis
@@ -35,6 +38,7 @@ This project uses GitHub Actions for continuous integration and deployment.
   - Dependency security review
 
 ### 🤖 Dependabot (`dependabot.yml`)
+
 - **Schedule**: Weekly on Mondays
 - **Scope**:
   - npm dependencies (grouped by type)
@@ -44,10 +48,12 @@ This project uses GitHub Actions for continuous integration and deployment.
 ## Setup Instructions
 
 ### 1. NPM Publishing Setup
+
 1. Create an npm access token at https://www.npmjs.com/settings/[username]/tokens
 2. Add it as `NPM_TOKEN` in repository secrets
 
 ### 2. Codecov Setup (Optional)
+
 1. Sign up at https://codecov.io
 2. Add repository
 3. Add `CODECOV_TOKEN` to repository secrets
@@ -55,6 +61,7 @@ This project uses GitHub Actions for continuous integration and deployment.
 ### 3. Release Process
 
 #### Automated Release (Recommended)
+
 ```bash
 # Create a new version tag
 git tag v1.0.0
@@ -62,6 +69,7 @@ git push origin v1.0.0
 ```
 
 #### Manual Release
+
 1. Go to Actions tab
 2. Select "Release" workflow
 3. Click "Run workflow"
@@ -69,7 +77,9 @@ git push origin v1.0.0
 5. Click "Run workflow" button
 
 ## Badge Status
+
 The README badges will show the actual CI status once workflows are triggered:
+
 - Tests badge: Shows test workflow status
 - Bundle size: Displayed in bundlephobia
 - NPM version: Shows latest published version

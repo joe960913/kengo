@@ -14,12 +14,12 @@ export default defineConfig([
     outDir: 'dist',
     platform: 'browser',
     env: {
-      NODE_ENV: 'development'
+      NODE_ENV: 'development',
     },
     esbuildOptions(options) {
       options.keepNames = true
     },
-    onSuccess: 'echo "📦 Development build complete"'
+    onSuccess: 'echo "📦 Development build complete"',
   },
   // Production build (minified)
   {
@@ -35,7 +35,7 @@ export default defineConfig([
     platform: 'browser',
     outExtension({ format }) {
       return {
-        js: format === 'esm' ? '.min.js' : '.min.cjs'
+        js: format === 'esm' ? '.min.js' : '.min.cjs',
       }
     },
     terserOptions: {
@@ -55,7 +55,7 @@ export default defineConfig([
       },
     },
     env: {
-      NODE_ENV: 'production'
+      NODE_ENV: 'production',
     },
     esbuildOptions(options) {
       options.legalComments = 'none'
@@ -63,6 +63,6 @@ export default defineConfig([
         js: `/* Kengo v${process.env.npm_package_version || '0.1.0'} | MIT */`,
       }
     },
-    onSuccess: 'echo "✨ Production build complete"'
-  }
+    onSuccess: 'echo "✨ Production build complete"',
+  },
 ])
