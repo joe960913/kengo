@@ -17,6 +17,32 @@ coverage
 *.sln
 *.sw?
 bun.lockb
-bun.lock
+# bun.lock should be committed, not ignored
 TODO.md
-test
+
+# Build outputs
+*.tsbuildinfo
+*.map
+*.d.ts.map
+
+# Editor
+*.swp
+*.swo
+*~
+.netrwhist
+
+# OS files
+Thumbs.db
+ehthumbs.db
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*

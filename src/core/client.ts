@@ -30,7 +30,8 @@ export class Kengo<T extends Schema> {
     for (const storeName of Object.keys(schema.stores)) {
       const storeOps = new StoreOperationsImpl(
         storeName,
-        () => this.connectionManager.getDatabase()
+        () => this.connectionManager.getDatabase(),
+        schema.stores[storeName]
       )
       
       this.stores.set(storeName, storeOps)
@@ -88,7 +89,8 @@ export class Kengo<T extends Schema> {
     for (const [storeName] of this.stores) {
       const transactionalStore = new TransactionalStoreOperations(
         storeName,
-        transaction
+        transaction,
+        this.connectionManager['schema'].stores[storeName]
       )
       
       client[storeName] = transactionalStore

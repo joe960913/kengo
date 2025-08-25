@@ -11,6 +11,7 @@ import type {
   DeleteManyOptions,
   UpsertOptions,
   SelectInput,
+  StoreDefinition,
 } from '../types'
 import { QueryBuilder } from '../core/query-builder'
 import { BaseStoreOperations } from './base-store'
@@ -18,7 +19,8 @@ import { BaseStoreOperations } from './base-store'
 export class TransactionalStoreOperations<T> extends BaseStoreOperations implements StoreOperations<T> {
   constructor(
     private readonly storeName: string,
-    private readonly transaction: IDBTransaction
+    private readonly transaction: IDBTransaction,
+    private readonly storeDefinition?: StoreDefinition
   ) {
     super()
   }
@@ -61,9 +63,38 @@ export class TransactionalStoreOperations<T> extends BaseStoreOperations impleme
     let count = 0
     const promises: Promise<void>[] = []
 
+    // Get unique indexes from store definition
+    const uniqueIndexes = this.storeDefinition?.['@@uniqueIndexes'] || []
+
     for (const item of options.data) {
       promises.push(
-        new Promise<void>((resolve, reject) => {
+        new Promise<void>(async (resolve, reject) => {
+          // Check for duplicates on unique indexes if skipDuplicates is true
+          if (options.skipDuplicates && uniqueIndexes.length > 0) {
+            for (const indexName of uniqueIndexes) {
+              const indexValue = (item as any)[indexName]
+              if (indexValue !== undefined) {
+                const index = store.index(indexName)
+                const checkRequest = index.get(indexValue)
+                
+                await new Promise<void>((checkResolve) => {
+                  checkRequest.onsuccess = () => {
+                    if (checkRequest.result) {
+                      // Duplicate found, skip this item
+                      resolve()
+                      return
+                    }
+                    checkResolve()
+                  }
+                  checkRequest.onerror = () => checkResolve()
+                })
+                
+                // If we resolved early due to duplicate, exit
+                if (checkRequest.result) return
+              }
+            }
+          }
+
           const request = store.add(item)
           request.onsuccess = () => {
             count++
@@ -71,6 +102,7 @@ export class TransactionalStoreOperations<T> extends BaseStoreOperations impleme
           }
           request.onerror = () => {
             if (options.skipDuplicates) {
+              // Don't increment count for skipped duplicates
               resolve()
             } else {
               reject(request.error)
