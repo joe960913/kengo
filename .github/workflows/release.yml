@@ -21,29 +21,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      
+
       - name: Install dependencies
         run: bun install
-      
+
       - name: Type check
         run: bun run type-check
-      
+
       - name: Lint
         run: bun run lint
-      
+
       - name: Run tests
         run: bun run test:run
-      
+
       - name: Build
         run: bun run build
 
@@ -53,24 +53,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
           registry-url: 'https://registry.npmjs.org'
-      
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      
+
       - name: Install dependencies
         run: bun install
-      
+
       - name: Build package
         run: bun run build
-      
+
       - name: Publish to npm
         run: npm publish --provenance --access public
         env:
@@ -82,7 +82,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Extract version
         id: extract_version
         run: |
@@ -91,7 +91,7 @@ jobs:
           else
             echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Generate release notes
         id: release_notes
         run: |
@@ -104,7 +104,7 @@ jobs:
           echo '```bash' >> release_notes.md
           echo "npm install kengo@${{ steps.extract_version.outputs.VERSION }}" >> release_notes.md
           echo '```' >> release_notes.md
-      
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:

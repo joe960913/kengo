@@ -89,7 +89,7 @@ describe('Transactions', () => {
 
         // This should cause an error
         throw new Error('Transaction failed!')
-      })
+      }),
     ).rejects.toThrowError('Transaction failed!')
 
     // Verify no changes were made
@@ -103,7 +103,7 @@ describe('Transactions', () => {
     await db.$transaction(async (tx: any) => {
       // Get all accounts
       const accounts = await tx.accounts.findMany()
-      
+
       // Update all balances
       for (const account of accounts) {
         await tx.accounts.update({
@@ -126,8 +126,8 @@ describe('Transactions', () => {
     // Verify all balances increased by 10%
     const accounts = await db.accounts.findMany()
     expect(accounts[0].balance).toBeCloseTo(1100, 2) // Alice: 1000 * 1.1
-    expect(accounts[1].balance).toBeCloseTo(550, 2)  // Bob: 500 * 1.1
-    expect(accounts[2].balance).toBeCloseTo(220, 2)  // Charlie: 200 * 1.1
+    expect(accounts[1].balance).toBeCloseTo(550, 2) // Bob: 500 * 1.1
+    expect(accounts[2].balance).toBeCloseTo(220, 2) // Charlie: 200 * 1.1
   })
 
   it('should reject nested transactions', async () => {
@@ -136,7 +136,7 @@ describe('Transactions', () => {
         await tx.$transaction(async () => {
           // This should not be allowed
         })
-      })
+      }),
     ).rejects.toThrowError('Nested transactions are not supported')
   })
 
@@ -153,7 +153,7 @@ describe('Transactions', () => {
     await expect(
       db.$transaction(async (tx: any) => {
         await tx.$disconnect()
-      })
+      }),
     ).rejects.toThrowError('Cannot disconnect within a transaction')
   })
 
@@ -163,10 +163,10 @@ describe('Transactions', () => {
       db.$transaction(
         async () => {
           // Simulate long-running operation
-          await new Promise(resolve => setTimeout(resolve, 200))
+          await new Promise((resolve) => setTimeout(resolve, 200))
         },
-        { timeout: 100 }
-      )
+        { timeout: 100 },
+      ),
     ).rejects.toThrowError('Transaction timeout')
   })
 
@@ -184,7 +184,7 @@ describe('Transactions', () => {
               amount: 10,
               timestamp: new Date(),
             },
-          })
+          }),
         )
       }
 

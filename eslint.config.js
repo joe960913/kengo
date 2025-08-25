@@ -6,7 +6,15 @@ import prettierConfig from 'eslint-config-prettier'
 
 export default [
   {
-    ignores: ['dist/', 'node_modules/', '*.config.js', '*.config.ts', 'coverage/', 'index.js', 'test/**/*.ts'],
+    ignores: [
+      'dist/',
+      'node_modules/',
+      '*.config.js',
+      '*.config.ts',
+      'coverage/',
+      'index.js',
+      'test/**/*.ts',
+    ],
   },
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
@@ -49,7 +57,7 @@ export default [
       ...eslint.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,
       ...prettierConfig.rules,
-      
+
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
@@ -77,7 +85,7 @@ export default [
           'ts-check': false,
         },
       ],
-      
+
       'prettier/prettier': 'error',
       '@typescript-eslint/no-empty-object-type': 'off',
       'no-console': ['warn', { allow: ['warn', 'error'] }],

@@ -255,7 +255,7 @@ describe('CRUD Operations', () => {
         db.users.update({
           where: { id: 999 },
           data: { name: 'Not Found' },
-        })
+        }),
       ).rejects.toThrowError('Record not found')
     })
   })
@@ -304,7 +304,7 @@ describe('CRUD Operations', () => {
       await expect(
         db.users.delete({
           where: { id: 999 },
-        })
+        }),
       ).rejects.toThrowError('Record not found')
     })
   })
