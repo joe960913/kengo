@@ -1,9 +1,4 @@
-import type { 
-  KengoClient, 
-  KengoConfig, 
-  Schema, 
-  TransactionOptions
-} from '../types'
+import type { KengoClient, KengoConfig, Schema, TransactionOptions } from '../types'
 import { ConnectionManager } from './connection'
 import { StoreOperationsImpl } from '../operations/store'
 import { TransactionalStoreOperations } from '../operations/transaction-store'
@@ -13,15 +8,11 @@ export class Kengo<T extends Schema> {
   private stores: Map<string, StoreOperationsImpl<any>> = new Map()
 
   constructor(config: KengoConfig<T>) {
-    this.connectionManager = new ConnectionManager(
-      config.name,
-      config.schema,
-      {
-        onUpgrade: config.onUpgrade,
-        onBlocked: config.onBlocked,
-        onVersionChange: config.onVersionChange,
-      }
-    )
+    this.connectionManager = new ConnectionManager(config.name, config.schema, {
+      onUpgrade: config.onUpgrade,
+      onBlocked: config.onBlocked,
+      onVersionChange: config.onVersionChange,
+    })
 
     this.initializeStores(config.schema)
   }
@@ -31,27 +22,26 @@ export class Kengo<T extends Schema> {
       const storeOps = new StoreOperationsImpl(
         storeName,
         () => this.connectionManager.getDatabase(),
-        schema.stores[storeName]
+        schema.stores[storeName],
       )
-      
+
       this.stores.set(storeName, storeOps)
-      
       ;(this as any)[storeName] = storeOps
     }
   }
 
   async $transaction<R>(
     fn: (tx: KengoClient<T>) => Promise<R>,
-    options?: TransactionOptions
+    options?: TransactionOptions,
   ): Promise<R> {
     const db = await this.connectionManager.getDatabase()
     const storeNames = Array.from(this.stores.keys())
-    
+
     return new Promise(async (resolve, reject) => {
       const transaction = db.transaction(storeNames, 'readwrite')
-      
+
       const transactionalClient = this.createTransactionalClient(transaction)
-      
+
       const timeoutId = options?.timeout
         ? setTimeout(() => {
             transaction.abort()
@@ -85,25 +75,25 @@ export class Kengo<T extends Schema> {
 
   private createTransactionalClient(transaction: IDBTransaction): KengoClient<T> {
     const client = {} as any
-    
+
     for (const [storeName] of this.stores) {
       const transactionalStore = new TransactionalStoreOperations(
         storeName,
         transaction,
-        this.connectionManager['schema'].stores[storeName]
+        this.connectionManager['schema'].stores[storeName],
       )
-      
+
       client[storeName] = transactionalStore
     }
 
     client.$transaction = async () => {
       throw new Error('Nested transactions are not supported')
     }
-    
+
     client.$getRawDB = async () => {
       return transaction.db
     }
-    
+
     client.$disconnect = async () => {
       throw new Error('Cannot disconnect within a transaction')
     }

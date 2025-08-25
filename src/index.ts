@@ -31,9 +31,4 @@ export type {
   AtomicOperations,
 } from './types/operations'
 
-export type {
-  KengoClient,
-  KengoConfig,
-  StoreOperations,
-  TransactionOptions,
-} from './types/client'
+export type { KengoClient, KengoConfig, StoreOperations, TransactionOptions } from './types/client'

@@ -1,16 +1,16 @@
 import type { WhereInput, WhereCondition, OrderByInput } from '../types'
 
-export class QueryBuilder<T> {
+export class QueryBuilder {
   static buildWhereFilter<T>(where: WhereInput<T>): (item: T) => boolean {
     return (item: T) => {
       for (const [key, condition] of Object.entries(where)) {
         const value = item[key as keyof T]
-        
+
         if (condition === undefined) continue
 
         if (typeof condition === 'object' && condition !== null && !Array.isArray(condition)) {
           const whereCondition = condition as WhereCondition<any>
-          
+
           if (!this.evaluateCondition(value, whereCondition)) {
             return false
           }
@@ -42,17 +42,17 @@ export class QueryBuilder<T> {
     }
 
     if (typeof value === 'number' && typeof condition === 'object') {
-      if ('gt' in condition && condition.gt !== undefined) {
-        if (value <= condition.gt) return false
+      if ('gt' in condition && condition.gt !== undefined && condition.gt !== null) {
+        if (value <= (condition.gt as number)) return false
       }
-      if ('gte' in condition && condition.gte !== undefined) {
-        if (value < condition.gte) return false
+      if ('gte' in condition && condition.gte !== undefined && condition.gte !== null) {
+        if (value < (condition.gte as number)) return false
       }
-      if ('lt' in condition && condition.lt !== undefined) {
-        if (value >= condition.lt) return false
+      if ('lt' in condition && condition.lt !== undefined && condition.lt !== null) {
+        if (value >= (condition.lt as number)) return false
       }
-      if ('lte' in condition && condition.lte !== undefined) {
-        if (value > condition.lte) return false
+      if ('lte' in condition && condition.lte !== undefined && condition.lte !== null) {
+        if (value > (condition.lte as number)) return false
       }
     }
 
@@ -73,15 +73,15 @@ export class QueryBuilder<T> {
 
   static buildOrderComparator<T>(orderBy: OrderByInput<T>): (a: T, b: T) => number {
     const orderArray = Array.isArray(orderBy) ? orderBy : [orderBy]
-    
+
     return (a: T, b: T) => {
       for (const orderItem of orderArray) {
         for (const [key, direction] of Object.entries(orderItem)) {
           const aVal = a[key as keyof T]
           const bVal = b[key as keyof T]
-          
+
           if (aVal === bVal) continue
-          
+
           const comparison = aVal < bVal ? -1 : 1
           return direction === 'asc' ? comparison : -comparison
         }

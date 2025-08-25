@@ -18,9 +18,11 @@ export type WhereInput<T> = {
 
 export type OrderDirection = 'asc' | 'desc'
 
-export type OrderByInput<T> = {
-  [K in keyof T]?: OrderDirection
-} | Array<{ [K in keyof T]?: OrderDirection }>
+export type OrderByInput<T> =
+  | {
+      [K in keyof T]?: OrderDirection
+    }
+  | Array<{ [K in keyof T]?: OrderDirection }>
 
 export type SelectInput<T> = {
   [K in keyof T]?: boolean
