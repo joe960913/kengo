@@ -126,18 +126,19 @@ Define your database structure with a type-safe schema.
 
 ```typescript
 const schema = defineSchema({
-  version: 1,  // Increment to trigger migrations
+  version: 1, // Increment to trigger migrations
   stores: {
     users: {
-      '@@id': { keyPath: 'id', autoIncrement: true },  // Primary key
-      '@@indexes': ['email', 'age', 'country'],         // Queryable indexes
-      '@@uniqueIndexes': ['email'],                     // Unique constraints
-    }
-  }
+      '@@id': { keyPath: 'id', autoIncrement: true }, // Primary key
+      '@@indexes': ['email', 'age', 'country'], // Queryable indexes
+      '@@uniqueIndexes': ['email'], // Unique constraints
+    },
+  },
 })
 ```
 
 **Schema Options:**
+
 - `version`: Database version (positive integer)
 - `stores`: Object defining your tables/stores
 - `@@id`: Primary key configuration
@@ -156,16 +157,16 @@ const schema = defineSchema({
 // Create single record
 const user = await db.users.create({
   data: { name: 'Alice', email: 'alice@example.com', age: 25 },
-  select: { id: true, name: true }  // Optional: Return specific fields
+  select: { id: true, name: true }, // Optional: Return specific fields
 })
 
 // Create multiple records
 const result = await db.users.createMany({
   data: [
     { name: 'Bob', email: 'bob@example.com', age: 30 },
-    { name: 'Charlie', email: 'charlie@example.com', age: 35 }
+    { name: 'Charlie', email: 'charlie@example.com', age: 35 },
   ],
-  skipDuplicates: true  // Skip records that violate unique constraints
+  skipDuplicates: true, // Skip records that violate unique constraints
 })
 // Returns: { count: 2 }
 ```
@@ -175,34 +176,31 @@ const result = await db.users.createMany({
 ```typescript
 // Find by unique field (returns null if not found)
 const user = await db.users.findUnique({
-  where: { id: 1 },  // or { email: 'alice@example.com' }
-  select: { name: true, email: true }
+  where: { id: 1 }, // or { email: 'alice@example.com' }
+  select: { name: true, email: true },
 })
 
 // Find first matching record (returns null if not found)
 const firstUser = await db.users.findFirst({
   where: { age: { gte: 25 } },
-  orderBy: { createdAt: 'desc' }
+  orderBy: { createdAt: 'desc' },
 })
 
 // Find multiple records
 const users = await db.users.findMany({
-  where: { 
+  where: {
     age: { gte: 18, lte: 65 },
-    country: 'US'
+    country: 'US',
   },
-  orderBy: [
-    { age: 'desc' },
-    { name: 'asc' }
-  ],
+  orderBy: [{ age: 'desc' }, { name: 'asc' }],
   skip: 10,
   take: 20,
-  select: { id: true, name: true, email: true }
+  select: { id: true, name: true, email: true },
 })
 
 // Count records
 const count = await db.users.count({
-  where: { age: { gte: 18 } }
+  where: { age: { gte: 18 } },
 })
 ```
 
@@ -212,20 +210,20 @@ const count = await db.users.count({
 // Update single record
 const updated = await db.users.update({
   where: { id: 1 },
-  data: { 
+  data: {
     name: 'Alice Smith',
-    age: { increment: 1 }  // Atomic operation
+    age: { increment: 1 }, // Atomic operation
   },
-  select: { id: true, name: true, age: true }
+  select: { id: true, name: true, age: true },
 })
 
 // Update multiple records
 const result = await db.users.updateMany({
   where: { country: 'US' },
-  data: { 
+  data: {
     isActive: true,
-    credits: { multiply: 1.1 }  // Give 10% bonus
-  }
+    credits: { multiply: 1.1 }, // Give 10% bonus
+  },
 })
 // Returns: { count: 42 }
 ```
@@ -235,12 +233,12 @@ const result = await db.users.updateMany({
 ```typescript
 // Delete single record (throws if not found)
 const deleted = await db.users.delete({
-  where: { id: 1 }
+  where: { id: 1 },
 })
 
 // Delete multiple records
 const result = await db.users.deleteMany({
-  where: { age: { lt: 18 } }
+  where: { age: { lt: 18 } },
 })
 // Returns: { count: 5 }
 ```
@@ -251,16 +249,16 @@ const result = await db.users.deleteMany({
 // Create if not exists, update if exists
 const user = await db.users.upsert({
   where: { email: 'alice@example.com' },
-  create: { 
-    name: 'Alice', 
-    email: 'alice@example.com', 
-    age: 25 
+  create: {
+    name: 'Alice',
+    email: 'alice@example.com',
+    age: 25,
   },
-  update: { 
+  update: {
     age: { increment: 1 },
-    lastSeen: new Date()
+    lastSeen: new Date(),
   },
-  select: { id: true, name: true, age: true }
+  select: { id: true, name: true, age: true },
 })
 ```
 
@@ -311,13 +309,12 @@ where: {
 
 ```typescript
 // Single field
-orderBy: { createdAt: 'desc' }
+orderBy: {
+  createdAt: 'desc'
+}
 
 // Multiple fields
-orderBy: [
-  { category: 'asc' },
-  { price: 'desc' }
-]
+orderBy: [{ category: 'asc' }, { price: 'desc' }]
 ```
 
 #### **Pagination**
@@ -352,25 +349,25 @@ Perform atomic numeric operations without race conditions.
 // Increment
 await db.counters.update({
   where: { id: 1 },
-  data: { value: { increment: 5 } }
+  data: { value: { increment: 5 } },
 })
 
 // Decrement
 await db.counters.update({
   where: { id: 1 },
-  data: { value: { decrement: 3 } }
+  data: { value: { decrement: 3 } },
 })
 
 // Multiply
 await db.counters.update({
   where: { id: 1 },
-  data: { value: { multiply: 2 } }
+  data: { value: { multiply: 2 } },
 })
 
 // Divide (ignores division by zero)
 await db.counters.update({
   where: { id: 1 },
-  data: { value: { divide: 4 } }
+  data: { value: { divide: 4 } },
 })
 
 // Combine with regular updates
@@ -379,8 +376,8 @@ await db.users.update({
   data: {
     name: 'Updated Name',
     points: { increment: 100 },
-    multiplier: { multiply: 1.5 }
-  }
+    multiplier: { multiply: 1.5 },
+  },
 })
 ```
 
@@ -395,23 +392,23 @@ Ensure data consistency with ACID transactions.
 const result = await db.$transaction(async (tx) => {
   // All operations use 'tx' instead of 'db'
   const user = await tx.users.create({
-    data: { name: 'Alice', email: 'alice@example.com' }
+    data: { name: 'Alice', email: 'alice@example.com' },
   })
-  
+
   const post = await tx.posts.create({
-    data: { 
-      userId: user.id, 
+    data: {
+      userId: user.id,
       title: 'First Post',
-      content: 'Hello World!'
-    }
+      content: 'Hello World!',
+    },
   })
-  
+
   await tx.users.update({
     where: { id: user.id },
-    data: { postCount: { increment: 1 } }
+    data: { postCount: { increment: 1 } },
   })
-  
-  return { user, post }  // Return value from transaction
+
+  return { user, post } // Return value from transaction
 })
 
 // Transaction with error handling
@@ -419,16 +416,16 @@ try {
   await db.$transaction(async (tx) => {
     await tx.accounts.update({
       where: { id: senderId },
-      data: { balance: { decrement: amount } }
+      data: { balance: { decrement: amount } },
     })
-    
+
     if (amount > 1000) {
-      throw new Error('Amount too large!')  // Rollback
+      throw new Error('Amount too large!') // Rollback
     }
-    
+
     await tx.accounts.update({
       where: { id: receiverId },
-      data: { balance: { increment: amount } }
+      data: { balance: { increment: amount } },
     })
   })
 } catch (error) {
@@ -438,6 +435,7 @@ try {
 ```
 
 **Transaction Rules:**
+
 - All operations within a transaction are atomic
 - If any operation fails, all changes are rolled back
 - Nested transactions are not supported
@@ -457,25 +455,26 @@ const schemaV1 = defineSchema({
   stores: {
     users: {
       '@@id': { keyPath: 'id', autoIncrement: true },
-      '@@indexes': ['email']
-    }
-  }
+      '@@indexes': ['email'],
+    },
+  },
 })
 
 // Version 2: Add new store and indexes
 const schemaV2 = defineSchema({
-  version: 2,  // Increment version to trigger migration
+  version: 2, // Increment version to trigger migration
   stores: {
     users: {
       '@@id': { keyPath: 'id', autoIncrement: true },
-      '@@indexes': ['email', 'createdAt'],  // Added new index
-      '@@uniqueIndexes': ['username']       // Added unique constraint
+      '@@indexes': ['email', 'createdAt'], // Added new index
+      '@@uniqueIndexes': ['username'], // Added unique constraint
     },
-    posts: {  // New store added
+    posts: {
+      // New store added
       '@@id': { keyPath: 'id', autoIncrement: true },
-      '@@indexes': ['userId', 'publishedAt']
-    }
-  }
+      '@@indexes': ['userId', 'publishedAt'],
+    },
+  },
 })
 
 // Kengo automatically:
@@ -484,13 +483,14 @@ const schemaV2 = defineSchema({
 // 3. Adds new indexes (createdAt, username)
 // 4. Preserves all existing data
 // 5. Handles the migration safely
-const db = new Kengo({ 
-  name: 'my-app', 
-  schema: schemaV2  // Just use the new schema!
+const db = new Kengo({
+  name: 'my-app',
+  schema: schemaV2, // Just use the new schema!
 })
 ```
 
 **Migration Features:**
+
 - **Zero-config**: Just increment the version number
 - **Non-destructive**: Existing data is always preserved
 - **Additive changes**: Add new stores, indexes, and unique constraints
@@ -498,6 +498,7 @@ const db = new Kengo({
 - **Safe rollback**: Old app versions continue to work with their schema version
 
 **Important Notes:**
+
 - Always increment the version number when changing schema
 - You cannot remove stores or indexes (IndexedDB limitation)
 - Schema changes are applied when the database is first opened
@@ -557,9 +558,9 @@ const schema = defineSchema({
   stores: {
     users: {
       '@@id': { keyPath: 'id', autoIncrement: true },
-      '@@uniqueIndexes': ['email']
-    }
-  }
+      '@@uniqueIndexes': ['email'],
+    },
+  },
 })
 
 // Client is fully typed based on schema
@@ -568,12 +569,12 @@ const db = new Kengo({ name: 'my-app', schema })
 // All operations are type-safe
 const user = await db.users.create({
   data: {
-    name: 'Alice',     // ✅ Required
-    email: 'alice@example.com',  // ✅ Required
-    age: 25,          // ✅ Required
+    name: 'Alice', // ✅ Required
+    email: 'alice@example.com', // ✅ Required
+    age: 25, // ✅ Required
     // id is optional (auto-increment)
     // unknown: 'field'  // ❌ TypeScript error
-  }
+  },
 })
 ```
 
