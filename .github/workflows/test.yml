@@ -38,6 +38,8 @@ jobs:
         run: bun run lint
 
       - name: Format check
+        # Skip format check for Dependabot PRs as they will be auto-formatted
+        if: github.actor != 'dependabot[bot]'
         run: bun run format:check
 
       - name: Run tests
