@@ -37,12 +37,14 @@ This project and everyone participating in it is governed by our Code of Conduct
 Before creating bug reports, please check existing issues to avoid duplicates. When you create a bug report, include as many details as possible:
 
 **Bug Report Template:**
-```markdown
+
+````markdown
 **Describe the bug**
 A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Define schema '...'
 2. Call method '...'
 3. See error
@@ -51,11 +53,14 @@ Steps to reproduce the behavior:
 What you expected to happen.
 
 **Code Example**
+
 ```typescript
 // Your code here
 ```
+````
 
 **Environment:**
+
 - Kengo version: [e.g., 1.0.0]
 - Browser: [e.g., Chrome 120]
 - OS: [e.g., macOS 14]
@@ -63,7 +68,8 @@ What you expected to happen.
 
 **Additional context**
 Any other context about the problem.
-```
+
+````
 
 ### Suggesting Enhancements 💡
 
@@ -86,11 +92,12 @@ Any alternative solutions or features you've considered.
 const result = await db.users.newFeature({
   // ...
 })
-```
+````
 
 **Additional context**
 Any other context or screenshots.
-```
+
+````
 
 ### Pull Requests 🚀
 
@@ -123,7 +130,7 @@ Brief description of the changes
 
 ## Related Issues
 Closes #(issue number)
-```
+````
 
 ## Development Setup
 
@@ -237,18 +244,18 @@ describe('Feature Name', () => {
       version: 1,
       stores: {
         users: {
-          '@@id': { keyPath: 'id', autoIncrement: true }
-        }
-      }
+          '@@id': { keyPath: 'id', autoIncrement: true },
+        },
+      },
     })
-    
+
     const db = new Kengo({ name: 'test-db', schema })
-    
+
     // Act
     const result = await db.users.create({
-      data: { name: 'Test' }
+      data: { name: 'Test' },
     })
-    
+
     // Assert
     expect(result).toBeDefined()
     expect(result.name).toBe('Test')
@@ -355,6 +362,7 @@ We follow [Semantic Versioning](https://semver.org/):
 ## Questions?
 
 Feel free to:
+
 - Open an issue for questions
 - Start a discussion in GitHub Discussions
 - Reach out to maintainers
@@ -362,6 +370,7 @@ Feel free to:
 ## Recognition
 
 Contributors will be recognized in:
+
 - The README contributors section
 - Release notes
 - The project's contributors page

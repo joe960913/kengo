@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "dev": "tsup --watch",
-    "build": "tsup",
+    "build": "bun run format && tsup",
     "build:analyze": "bun run build && bun run analyze",
     "analyze": "echo 'Bundle sizes:' && ls -lh dist/*.js dist/*.cjs | grep -v '.map'",
     "size": "bun run build && size-limit",
