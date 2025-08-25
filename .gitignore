@@ -46,3 +46,31 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+
+# CI/CD
+.github/workflows/*.local.yml
+.github/test-results/
+.nyc_output/
+junit.xml
+test-results/
+
+# Release
+release_notes.md
+*.tgz
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Size analysis
+.size-limit.cache
+
+# Benchmarks
+benchmark/results/
+*.bench.js
+
+# Documentation build
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
+# Vitest
+*.timestamp-*

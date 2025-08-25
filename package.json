@@ -1,7 +1,7 @@
 {
   "name": "kengo",
   "version": "0.1.3",
-  "description": "A Prisma-like ORM that precisely translates query objects into native IndexedDB transactions and operations for browsers",
+  "description": "A Prisma-like, type-safe, and reactive ORM for IndexedDB. Say goodbye to callbacks and enjoy a modern developer experience in the browser",
   "author": "Zander Zi <zanderzi0913@gmail.com>",
   "license": "MIT",
   "type": "module",
@@ -57,13 +57,20 @@
     "vitest": "^2.0.5"
   },
   "keywords": [
+    "kengo",
     "indexeddb",
+    "orm",
     "database",
     "browser",
+    "client-side",
+    "storage",
     "prisma",
-    "orm",
+    "drizzle",
     "typescript",
-    "kengo"
+    "type-safe",
+    "reactive",
+    "localstorage",
+    "pwa"
   ],
   "repository": {
     "type": "git",
