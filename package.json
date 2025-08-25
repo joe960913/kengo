@@ -35,7 +35,8 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "bun run build",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@size-limit/file": "^11.2.0",
@@ -49,7 +50,9 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "fake-indexeddb": "^6.1.0",
+    "husky": "^9.1.7",
     "jsdom": "^26.1.0",
+    "lint-staged": "^16.1.5",
     "prettier": "^3.3.3",
     "terser": "^5.43.1",
     "tsup": "^8.2.4",
@@ -82,5 +85,8 @@
   "homepage": "https://github.com/joe960913/kengo#readme",
   "engines": {
     "node": ">=18"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,md,yml,yaml}": "prettier --write"
   }
 }
