@@ -1,17 +1,12 @@
 <div align="center">
   
-  <br />
+  # ⚔︎
   
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/joe960913/kengo/main/assets/kengo-logo.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/joe960913/kengo/main/assets/kengo-logo.png">
-    <img alt="Kengo Logo" src="https://raw.githubusercontent.com/joe960913/kengo/main/assets/kengo-logo.png" width="140">
-  </picture>
+  # **K E N G O**
+  
+  ### 剣豪
   
   <br />
-  <br />
-  
-  # Kengo 剣豪
   
   **A modern, type-safe, and reactive ORM for IndexedDB**  
   *Wield the power of a server-side ORM, directly in the browser*
@@ -46,7 +41,17 @@ Managing data in the browser shouldn't feel like a clumsy battle. IndexedDB is p
 Experience the power of Kengo in minutes.
 
 ```bash
+# npm
 npm install kengo
+
+# yarn
+yarn add kengo
+
+# pnpm
+pnpm add kengo
+
+# bun
+bun add kengo
 ```
 
 Define your schema, forge your client, and wield the blade.
@@ -110,46 +115,477 @@ Kengo is an actively developed project on a mission to deliver the ultimate brow
 - [ ] **Data Seeding:** A dedicated API for seeding development data.
 - [ ] **Kengo Studio:** A developer tool for visualizing and managing your local database.
 
-## Core Features
+## 📚 Complete API Reference
 
-<details>
+<details open>
 <summary><strong>Click to expand the full API documentation</strong></summary>
 
-### Schema Definition (`defineSchema`)
+### 🏗️ Schema Definition
 
-The source of truth for your database structure.
+Define your database structure with a type-safe schema.
 
-- **`version`**: `number` (required) - Increment to trigger migrations.
-- **`stores`**: `Record<string, StoreDefinition>` (required) - Defines your tables.
-  - `'@@id'`: `string | { keyPath: string, autoIncrement: boolean }` (required) - Defines the primary key.
-  - `'@@indexes'`: `string[]` (optional) - Defines queryable indexes.
-  - `'@@uniqueIndexes'`: `string[]` (optional) - Defines unique constraints.
+```typescript
+const schema = defineSchema({
+  version: 1,  // Increment to trigger migrations
+  stores: {
+    users: {
+      '@@id': { keyPath: 'id', autoIncrement: true },  // Primary key
+      '@@indexes': ['email', 'age', 'country'],         // Queryable indexes
+      '@@uniqueIndexes': ['email'],                     // Unique constraints
+    }
+  }
+})
+```
 
-### CRUD Operations
+**Schema Options:**
+- `version`: Database version (positive integer)
+- `stores`: Object defining your tables/stores
+- `@@id`: Primary key configuration
+  - String: `'@@id': 'userId'` (simple key path)
+  - Object: `{ keyPath: 'id', autoIncrement: true }` (auto-increment)
+- `@@indexes`: Array of field names for non-unique indexes
+- `@@uniqueIndexes`: Array of field names for unique indexes
 
-A complete, powerful, and familiar API for data manipulation.
+---
 
-- `create` / `createMany`
-- `findUnique` / `findFirst` / `findMany`
-- `update` / `updateMany`
-- `delete` / `deleteMany`
-- `upsert`
+### ✨ CRUD Operations
 
-### Query Modifiers
+#### **Create Operations**
 
-Refine your queries with precision.
+```typescript
+// Create single record
+const user = await db.users.create({
+  data: { name: 'Alice', email: 'alice@example.com', age: 25 },
+  select: { id: true, name: true }  // Optional: Return specific fields
+})
 
-- **Filtering (`where`)**: `equals`, `not`, `in`, `gt`, `gte`, `lt`, `lte`, `contains`, `startsWith`, `endsWith`.
-- **Ordering (`orderBy`)**: Sort by one or more fields, `asc` or `desc`.
-- **Pagination (`take` & `skip`)**: Effortless pagination for large datasets.
-- **Field Selection (`select`)**: Return only the data you need for maximum performance.
+// Create multiple records
+const result = await db.users.createMany({
+  data: [
+    { name: 'Bob', email: 'bob@example.com', age: 30 },
+    { name: 'Charlie', email: 'charlie@example.com', age: 35 }
+  ],
+  skipDuplicates: true  // Skip records that violate unique constraints
+})
+// Returns: { count: 2 }
+```
 
-### Advanced Features
+#### **Read Operations**
 
-Techniques for the seasoned swordsman.
+```typescript
+// Find by unique field (returns null if not found)
+const user = await db.users.findUnique({
+  where: { id: 1 },  // or { email: 'alice@example.com' }
+  select: { name: true, email: true }
+})
 
-- **Transactions (`$transaction`)**: Ensure data integrity by bundling multiple operations into an atomic unit. If one fails, all are rolled back.
-- **Raw Access (`$getRawDB`)**: An "escape hatch" to the underlying `IDBDatabase` object for when you need absolute control.
+// Find first matching record (returns null if not found)
+const firstUser = await db.users.findFirst({
+  where: { age: { gte: 25 } },
+  orderBy: { createdAt: 'desc' }
+})
+
+// Find multiple records
+const users = await db.users.findMany({
+  where: { 
+    age: { gte: 18, lte: 65 },
+    country: 'US'
+  },
+  orderBy: [
+    { age: 'desc' },
+    { name: 'asc' }
+  ],
+  skip: 10,
+  take: 20,
+  select: { id: true, name: true, email: true }
+})
+
+// Count records
+const count = await db.users.count({
+  where: { age: { gte: 18 } }
+})
+```
+
+#### **Update Operations**
+
+```typescript
+// Update single record
+const updated = await db.users.update({
+  where: { id: 1 },
+  data: { 
+    name: 'Alice Smith',
+    age: { increment: 1 }  // Atomic operation
+  },
+  select: { id: true, name: true, age: true }
+})
+
+// Update multiple records
+const result = await db.users.updateMany({
+  where: { country: 'US' },
+  data: { 
+    isActive: true,
+    credits: { multiply: 1.1 }  // Give 10% bonus
+  }
+})
+// Returns: { count: 42 }
+```
+
+#### **Delete Operations**
+
+```typescript
+// Delete single record (throws if not found)
+const deleted = await db.users.delete({
+  where: { id: 1 }
+})
+
+// Delete multiple records
+const result = await db.users.deleteMany({
+  where: { age: { lt: 18 } }
+})
+// Returns: { count: 5 }
+```
+
+#### **Upsert Operation**
+
+```typescript
+// Create if not exists, update if exists
+const user = await db.users.upsert({
+  where: { email: 'alice@example.com' },
+  create: { 
+    name: 'Alice', 
+    email: 'alice@example.com', 
+    age: 25 
+  },
+  update: { 
+    age: { increment: 1 },
+    lastSeen: new Date()
+  },
+  select: { id: true, name: true, age: true }
+})
+```
+
+---
+
+### 🔍 Query Conditions
+
+#### **Where Conditions**
+
+```typescript
+// Equality (implicit)
+where: { name: 'Alice' }
+
+// Equality (explicit)
+where: { name: { equals: 'Alice' } }
+
+// Not equal
+where: { status: { not: 'deleted' } }
+
+// In array
+where: { role: { in: ['admin', 'moderator'] } }
+
+// Not in array
+where: { status: { notIn: ['deleted', 'suspended'] } }
+
+// Greater than / Greater than or equal
+where: { age: { gt: 18 } }
+where: { age: { gte: 18 } }
+
+// Less than / Less than or equal
+where: { price: { lt: 100 } }
+where: { price: { lte: 100 } }
+
+// String operations
+where: { email: { contains: '@gmail.com' } }
+where: { name: { startsWith: 'John' } }
+where: { url: { endsWith: '.com' } }
+
+// Combine multiple conditions (AND)
+where: {
+  age: { gte: 18, lte: 65 },
+  country: 'US',
+  isActive: true
+}
+```
+
+#### **Ordering**
+
+```typescript
+// Single field
+orderBy: { createdAt: 'desc' }
+
+// Multiple fields
+orderBy: [
+  { category: 'asc' },
+  { price: 'desc' }
+]
+```
+
+#### **Pagination**
+
+```typescript
+// Skip and take
+{
+  skip: 20,   // Skip first 20 records
+  take: 10    // Take next 10 records
+}
+```
+
+#### **Field Selection**
+
+```typescript
+// Select specific fields
+select: {
+  id: true,
+  name: true,
+  email: true
+  // Other fields will not be returned
+}
+```
+
+---
+
+### ⚛️ Atomic Operations
+
+Perform atomic numeric operations without race conditions.
+
+```typescript
+// Increment
+await db.counters.update({
+  where: { id: 1 },
+  data: { value: { increment: 5 } }
+})
+
+// Decrement
+await db.counters.update({
+  where: { id: 1 },
+  data: { value: { decrement: 3 } }
+})
+
+// Multiply
+await db.counters.update({
+  where: { id: 1 },
+  data: { value: { multiply: 2 } }
+})
+
+// Divide (ignores division by zero)
+await db.counters.update({
+  where: { id: 1 },
+  data: { value: { divide: 4 } }
+})
+
+// Combine with regular updates
+await db.users.update({
+  where: { id: 1 },
+  data: {
+    name: 'Updated Name',
+    points: { increment: 100 },
+    multiplier: { multiply: 1.5 }
+  }
+})
+```
+
+---
+
+### 🔄 Transactions
+
+Ensure data consistency with ACID transactions.
+
+```typescript
+// Basic transaction
+const result = await db.$transaction(async (tx) => {
+  // All operations use 'tx' instead of 'db'
+  const user = await tx.users.create({
+    data: { name: 'Alice', email: 'alice@example.com' }
+  })
+  
+  const post = await tx.posts.create({
+    data: { 
+      userId: user.id, 
+      title: 'First Post',
+      content: 'Hello World!'
+    }
+  })
+  
+  await tx.users.update({
+    where: { id: user.id },
+    data: { postCount: { increment: 1 } }
+  })
+  
+  return { user, post }  // Return value from transaction
+})
+
+// Transaction with error handling
+try {
+  await db.$transaction(async (tx) => {
+    await tx.accounts.update({
+      where: { id: senderId },
+      data: { balance: { decrement: amount } }
+    })
+    
+    if (amount > 1000) {
+      throw new Error('Amount too large!')  // Rollback
+    }
+    
+    await tx.accounts.update({
+      where: { id: receiverId },
+      data: { balance: { increment: amount } }
+    })
+  })
+} catch (error) {
+  // Transaction rolled back, no changes applied
+  console.error('Transaction failed:', error)
+}
+```
+
+**Transaction Rules:**
+- All operations within a transaction are atomic
+- If any operation fails, all changes are rolled back
+- Nested transactions are not supported
+- Cannot call `$disconnect()` within a transaction
+- Can access raw database with `tx.$getRawDB()`
+
+---
+
+### 🔄 Automatic Migrations
+
+Kengo handles schema migrations automatically when you increment the version number.
+
+```typescript
+// Version 1: Initial schema
+const schemaV1 = defineSchema({
+  version: 1,
+  stores: {
+    users: {
+      '@@id': { keyPath: 'id', autoIncrement: true },
+      '@@indexes': ['email']
+    }
+  }
+})
+
+// Version 2: Add new store and indexes
+const schemaV2 = defineSchema({
+  version: 2,  // Increment version to trigger migration
+  stores: {
+    users: {
+      '@@id': { keyPath: 'id', autoIncrement: true },
+      '@@indexes': ['email', 'createdAt'],  // Added new index
+      '@@uniqueIndexes': ['username']       // Added unique constraint
+    },
+    posts: {  // New store added
+      '@@id': { keyPath: 'id', autoIncrement: true },
+      '@@indexes': ['userId', 'publishedAt']
+    }
+  }
+})
+
+// Kengo automatically:
+// 1. Detects version change (1 → 2)
+// 2. Creates new stores (posts)
+// 3. Adds new indexes (createdAt, username)
+// 4. Preserves all existing data
+// 5. Handles the migration safely
+const db = new Kengo({ 
+  name: 'my-app', 
+  schema: schemaV2  // Just use the new schema!
+})
+```
+
+**Migration Features:**
+- **Zero-config**: Just increment the version number
+- **Non-destructive**: Existing data is always preserved
+- **Additive changes**: Add new stores, indexes, and unique constraints
+- **Automatic handling**: No migration files or scripts needed
+- **Safe rollback**: Old app versions continue to work with their schema version
+
+**Important Notes:**
+- Always increment the version number when changing schema
+- You cannot remove stores or indexes (IndexedDB limitation)
+- Schema changes are applied when the database is first opened
+- Each browser profile maintains its own schema version
+
+---
+
+### 🔧 Advanced Features
+
+#### **Raw Database Access**
+
+```typescript
+// Get the underlying IDBDatabase instance
+const rawDB = await db.$getRawDB()
+
+// Use native IndexedDB API for advanced operations
+const transaction = rawDB.transaction(['users'], 'readonly')
+const objectStore = transaction.objectStore('users')
+const index = objectStore.index('email')
+// ... perform native IndexedDB operations
+```
+
+#### **Connection Management**
+
+```typescript
+// Initialize database (called automatically on first operation)
+await db.$connect()
+
+// Close database connection
+await db.$disconnect()
+
+// Check connection status
+const isConnected = db.$isConnected()
+```
+
+---
+
+### 📝 TypeScript Support
+
+Kengo provides full TypeScript support with auto-generated types.
+
+```typescript
+import { defineSchema, Kengo } from 'kengo'
+
+// Define your data types
+interface User {
+  id?: number
+  name: string
+  email: string
+  age: number
+  createdAt: Date
+}
+
+// Schema is fully typed
+const schema = defineSchema({
+  version: 1,
+  stores: {
+    users: {
+      '@@id': { keyPath: 'id', autoIncrement: true },
+      '@@uniqueIndexes': ['email']
+    }
+  }
+})
+
+// Client is fully typed based on schema
+const db = new Kengo({ name: 'my-app', schema })
+
+// All operations are type-safe
+const user = await db.users.create({
+  data: {
+    name: 'Alice',     // ✅ Required
+    email: 'alice@example.com',  // ✅ Required
+    age: 25,          // ✅ Required
+    // id is optional (auto-increment)
+    // unknown: 'field'  // ❌ TypeScript error
+  }
+})
+```
+
+---
+
+### 🚀 Performance Tips
+
+1. **Use Indexes**: Define indexes for fields you query frequently
+2. **Select Fields**: Use `select` to return only needed fields
+3. **Batch Operations**: Use `createMany`, `updateMany`, `deleteMany` for bulk operations
+4. **Transactions**: Group related operations in transactions
+5. **Pagination**: Use `skip` and `take` for large datasets
 
 </details>
 
