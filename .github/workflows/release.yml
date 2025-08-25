@@ -47,37 +47,8 @@ jobs:
       - name: Build
         run: bun run build
 
-  publish-npm:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install
-
-      - name: Build package
-        run: bun run build
-
-      - name: Publish to npm
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
   create-release:
-    needs: publish-npm
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -100,10 +71,8 @@ jobs:
           echo "## What's Changed" >> release_notes.md
           git log $(git describe --tags --abbrev=0 2>/dev/null || echo "")..HEAD --pretty=format:"- %s" >> release_notes.md || echo "- Initial release" >> release_notes.md
           echo "" >> release_notes.md
-          echo "## Installation" >> release_notes.md
-          echo '```bash' >> release_notes.md
-          echo "npm install kengo@${{ steps.extract_version.outputs.VERSION }}" >> release_notes.md
-          echo '```' >> release_notes.md
+          echo "" >> release_notes.md
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/...v${{ steps.extract_version.outputs.VERSION }}" >> release_notes.md
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
