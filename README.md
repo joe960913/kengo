@@ -1,15 +1,30 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/joe960913/kengo/main/assets/kengo-logo.png" alt="Kengo Logo" width="150">
-  <h1>Kengo (剣豪)</h1>
-  <p>
-    <strong>A modern, type-safe, and reactive ORM for IndexedDB.<br />Wield the power of a server-side ORM, directly in the browser.</strong>
-  </p>
-
-[![NPM Version](https://img.shields.io/npm/v/kengo?color=c6362c&style=flat-rounded)](https://www.npmjs.com/package/kengo)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/kengo?style=flat-rounded&color=007ec6)](https://bundlephobia.com/result?p=kengo)
-[![Tests](https://img.shields.io/github/actions/workflow/status/joe960913/kengo/test.yml?branch=main&label=tests&style=flat-square)](https://github.com/joe960913/kengo/actions)
-[![License](https://img.shields.io/npm/l/kengo?style=flat-square&color=yellow)](https://opensource.org/licenses/MIT)
-
+  
+  <br />
+  
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/joe960913/kengo/main/assets/kengo-logo.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/joe960913/kengo/main/assets/kengo-logo.png">
+    <img alt="Kengo Logo" src="https://raw.githubusercontent.com/joe960913/kengo/main/assets/kengo-logo.png" width="140">
+  </picture>
+  
+  <br />
+  <br />
+  
+  # Kengo 剣豪
+  
+  **A modern, type-safe, and reactive ORM for IndexedDB**  
+  *Wield the power of a server-side ORM, directly in the browser*
+  
+  <br />
+  
+  [![NPM Version](https://img.shields.io/npm/v/kengo?style=for-the-badge&labelColor=1a1b26&color=7aa2f7&logo=npm)](https://www.npmjs.com/package/kengo) [![Bundle Size](https://img.shields.io/bundlephobia/minzip/kengo?style=for-the-badge&labelColor=1a1b26&color=9ece6a&logo=javascript)](https://bundlephobia.com/result?p=kengo) [![Tests](https://img.shields.io/github/actions/workflow/status/joe960913/kengo/test.yml?branch=main&label=tests&style=for-the-badge&labelColor=1a1b26&color=bb9af7&logo=github)](https://github.com/joe960913/kengo/actions) [![License](https://img.shields.io/npm/l/kengo?style=for-the-badge&labelColor=1a1b26&color=e0af68&logo=opensourceinitiative)](https://opensource.org/licenses/MIT)  
+  [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-7aa2f7?style=for-the-badge&labelColor=1a1b26&logo=typescript)](https://www.typescriptlang.org/) [![IndexedDB](https://img.shields.io/badge/IndexedDB-Powered-f7768e?style=for-the-badge&labelColor=1a1b26&logo=database)](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) [![Zero Deps](https://img.shields.io/badge/Zero-Dependencies-9ece6a?style=for-the-badge&labelColor=1a1b26)](https://www.npmjs.com/package/kengo?activeTab=dependencies) [![Browser](https://img.shields.io/badge/Browser-Compatible-73daca?style=for-the-badge&labelColor=1a1b26&logo=googlechrome)](https://caniuse.com/indexeddb)
+  
+  <br />
+  
+  ---
+  
 </div>
 
 Managing data in the browser shouldn't feel like a clumsy battle. IndexedDB is powerful, but its native API is a maze of callbacks and verbose boilerplate—like wielding a blunt, heavy sword in the fog.
