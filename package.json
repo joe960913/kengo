@@ -1,6 +1,6 @@
 {
   "name": "kengo",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A Prisma-like, type-safe, and reactive ORM for IndexedDB. Say goodbye to callbacks and enjoy a modern developer experience in the browser",
   "author": "Zander Zi <zanderzi0913@gmail.com>",
   "license": "MIT",
