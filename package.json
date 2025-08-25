@@ -1,6 +1,6 @@
 {
   "name": "kengo",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A Prisma-like ORM that precisely translates query objects into native IndexedDB transactions and operations for browsers",
   "author": "Zander Zi <zanderzi0913@gmail.com>",
   "license": "MIT",
